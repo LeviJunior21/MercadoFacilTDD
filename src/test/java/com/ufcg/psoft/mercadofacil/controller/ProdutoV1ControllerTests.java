@@ -3,6 +3,7 @@ package com.ufcg.psoft.mercadofacil.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ufcg.psoft.mercadofacil.model.Produto;
 import com.ufcg.psoft.mercadofacil.repository.ProdutoRepository;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,8 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.util.AssertionErrors.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,6 +65,7 @@ public class ProdutoV1ControllerTests {
         @Test
         @DisplayName("Quando alteramos o nome do produto com dados válidos")
         void quandoAlteramosNomeDoProdutoValido() throws Exception {
+
             // Arrangeee
             produto.setNome("Produto Dez Alterado");
 
@@ -90,6 +91,7 @@ public class ProdutoV1ControllerTests {
         @Test
         @DisplayName("Quando o preço é válido.")
         void quandoPrecoEhValido() throws Exception {
+
             produto.setPreco(450.00);
             // Act
             String responseJsonString = driver.perform(put("/v1/produtos/" + produto.getId())
@@ -105,48 +107,40 @@ public class ProdutoV1ControllerTests {
 
         @Test
         @DisplayName("Quando o preço é igual a zero.")
-        void quandoPrecoEhIgualAZero() {
+        void quandoPrecoEhIgualAZero() throws Exception {
+
+            // Arrange
             produto2.setPreco(0.0);
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto2.getId())
+
+            // Act
+            ServletException thrown = assertThrows( ServletException.class,
+                    () -> driver.perform(put("/v1/produtos/" + produto2.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(produto2)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
+                        .andExpect(status().isBadRequest())
+            );
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
-
-            assertEquals(false, pegouProduto);
-
+            // Assert
+            assertTrue(thrown.getMessage().contains("Preco invalido!"));
         }
 
         @Test
         @DisplayName("Quando o preço é menor que zero.")
         void quandoPrecoEhMenorQueZero() {
+
+            // Arrange
             produto3.setPreco(-10.0);
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto3.getId())
+
+            // Act
+            ServletException thrown = assertThrows(ServletException.class,
+                    () -> driver.perform(put("/v1/produtos/" + produto3.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(produto3)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
+                        .andExpect(status().isBadRequest())
+            );
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
-
-            assertEquals(false, pegouProduto);
-
+            // Assert
+            assertTrue(thrown.getMessage().contains("Preco invalido!"));
         }
     }
 
@@ -157,30 +151,30 @@ public class ProdutoV1ControllerTests {
         @Test
         @DisplayName("Quando o código de barras é inválido.")
         void quandoCodigoBarrasEhInvalido() {
+
+            // Arrange
             produto4.setCodigoBarra("7899137500104");
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto4.getId())
+
+            // Act
+            ServletException thrown = assertThrows(ServletException.class,
+                    () -> driver.perform(put("/v1/produtos/" + produto4.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(produto4)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
+                        .andExpect(status().isBadRequest())
+            );
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
-
-            assertEquals(false, pegouProduto);
-
+            // Assert
+            assertTrue(thrown.getMessage().contains("Código de barras inválido!"));
         }
 
         @Test
         @DisplayName("Quando o código de barras é válido.")
         void quandoCodigoBarrasEhValido() throws Exception {
+
+            // Arrange
             produto5.setCodigoBarra("7899137500100");
+
+            // Act
             String responseJsonString = driver.perform(put("/v1/produtos/" + produto5.getId())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(produto5)))
@@ -190,6 +184,7 @@ public class ProdutoV1ControllerTests {
 
             Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
 
+            // Assert
             assertEquals("7899137500100", resultado.getCodigoBarra());
 
         }
@@ -197,23 +192,20 @@ public class ProdutoV1ControllerTests {
         @Test
         @DisplayName("Quando o código de barras é vazio.")
         void quandoCodigoBarrasEhVazio() throws Exception {
+
+            // Arrange
             produto10.setCodigoBarra("");
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto10.getId())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(produto10)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
+            // Act
+            ServletException thrown = assertThrows(ServletException.class,
+                    () -> driver.perform(put("/v1/produtos/" + produto10.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(produto10)))
+                        .andExpect(status().isBadRequest())
+            );
 
-            assertEquals(false, pegouProduto);
+            // Assert
+            assertTrue(thrown.getMessage().contains("Código de barras inválido!"));
 
         }
     }
@@ -224,46 +216,39 @@ public class ProdutoV1ControllerTests {
         @Test
         @DisplayName("Quando o nome do produto é null")
         void quandoNomeEhNull() throws Exception {
+
+            // Arrange
             produto6.setNome(null);
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto6.getId())
+
+            // Act
+            ServletException thrown = assertThrows(ServletException.class,
+                    () -> driver.perform(put("/v1/produtos/" + produto6.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(produto6)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
+                        .andExpect(status().isBadRequest())
+            );
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
-
-            assertEquals(false, pegouProduto);
-
+            // Assert
+            assertTrue(thrown.getMessage().contains("Nome inválido"));
         }
 
         @Test
         @DisplayName("Quando o nome do produto pe vazio")
         void quandoNomeEhVazio() throws Exception {
+
+            // Arrange
             produto7.setNome("");
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto7.getId())
+
+            // Act
+            ServletException thrown = assertThrows(ServletException.class,
+                    () -> driver.perform(put("/v1/produtos/" + produto7.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(produto7)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
+                        .andExpect(status().isBadRequest())
+            );
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
-
-            assertEquals(false, pegouProduto);
+            // Assert
+            assertTrue(thrown.getMessage().contains("Nome inválido!"));
         }
 
     }
@@ -274,45 +259,38 @@ public class ProdutoV1ControllerTests {
         @Test
         @DisplayName("Quando o fabricante é null")
         void quandoFabricanteEhNull() throws Exception {
+
+            // Arrange
             produto8.setFabricante(null);
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto8.getId())
+
+            // Act
+            ServletException thrown = assertThrows(ServletException.class,
+                    () -> driver.perform(put("/v1/produtos/" + produto8.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(produto8)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
+                        .andExpect(status().isBadRequest())
+            );
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
-
-            assertEquals(false, pegouProduto);
+            // Assert
+            assertTrue(thrown.getMessage().contains("Fabricante inválido!"));
         }
 
         @Test
         @DisplayName("Quando o fabricante é vazio")
         void quandoFabricanteEhVazio() throws Exception {
+            // Arrange
             produto9.setFabricante("");
-            boolean pegouProduto = false;
-            try {
-                String responseJsonString = driver.perform(put("/v1/produtos/" + produto9.getId())
+
+            // Act
+            ServletException thrown = assertThrows(ServletException.class,
+                    () ->  driver.perform(put("/v1/produtos/" + produto9.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(produto9)))
-                        .andExpect(status().isOk())
-                        .andDo(print())
-                        .andReturn().getResponse().getContentAsString();
+                        .andExpect(status().isBadRequest())
+            );
 
-                Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
-                pegouProduto = true;
-            }
-            catch (Exception e) {
-            }
-
-            assertEquals(false, pegouProduto);
+            // Assert
+            assertTrue(thrown.getMessage().contains("Fabricante inválido!"));
         }
     }
 }

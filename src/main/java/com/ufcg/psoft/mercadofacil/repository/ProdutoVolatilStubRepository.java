@@ -62,7 +62,7 @@ public class ProdutoVolatilStubRepository implements ProdutoRepository<Produto, 
         if(id == 60L) {
             return Produto.builder()
                     .id(id)
-                    .codigoBarra("7899137500104")
+                    .codigoBarra("7899137500100")
                     .nome("Produto Sessenta")
                     .fabricante("Empresa Sessenta")
                     .preco(450.00)
@@ -71,7 +71,7 @@ public class ProdutoVolatilStubRepository implements ProdutoRepository<Produto, 
         if(id == 70L) {
             return Produto.builder()
                     .id(id)
-                    .codigoBarra("7899137500104")
+                    .codigoBarra("7899137500100")
                     .nome("Produto Setenta")
                     .fabricante("Empresa Setenta")
                     .preco(450.00)
@@ -80,7 +80,7 @@ public class ProdutoVolatilStubRepository implements ProdutoRepository<Produto, 
         if(id == 80L) {
             return Produto.builder()
                     .id(id)
-                    .codigoBarra("7899137500104")
+                    .codigoBarra("7899137500100")
                     .nome("Produto Oitenta")
                     .fabricante("Empresa Oitenta")
                     .preco(450.00)
@@ -89,7 +89,7 @@ public class ProdutoVolatilStubRepository implements ProdutoRepository<Produto, 
         if(id == 90L) {
             return Produto.builder()
                     .id(id)
-                    .codigoBarra("7899137500104")
+                    .codigoBarra("7899137500100")
                     .nome("Produto Noventa")
                     .fabricante("Empresa Noventa")
                     .preco(450.00)

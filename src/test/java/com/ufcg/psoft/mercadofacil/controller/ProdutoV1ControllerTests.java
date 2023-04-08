@@ -66,7 +66,7 @@ public class ProdutoV1ControllerTests {
         @DisplayName("Quando alteramos o nome do produto com dados válidos")
         void quandoAlteramosNomeDoProdutoValido() throws Exception {
 
-            // Arrangeee
+            // Arrange
             produto.setNome("Produto Dez Alterado");
 
             // Act
@@ -78,6 +78,8 @@ public class ProdutoV1ControllerTests {
                     .andReturn().getResponse().getContentAsString();
 
             Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
+
+            // Assert
             assertEquals("Produto Dez Alterado", resultado.getNome());
             assertEquals(200.00, produto.getPreco());
             assertEquals("Empresa Dez", produto.getFabricante());
@@ -92,7 +94,9 @@ public class ProdutoV1ControllerTests {
         @DisplayName("Quando o preço é válido.")
         void quandoPrecoEhValido() throws Exception {
 
+            // Arrange
             produto.setPreco(450.00);
+
             // Act
             String responseJsonString = driver.perform(put("/v1/produtos/" + produto.getId())
                             .contentType(MediaType.APPLICATION_JSON)
@@ -102,6 +106,8 @@ public class ProdutoV1ControllerTests {
                     .andReturn().getResponse().getContentAsString();
 
             Produto resultado = objectMapper.readValue(responseJsonString, Produto.ProdutoBuilder.class).build();
+
+            // Assert
             assertEquals(450.00, resultado.getPreco());
         }
 
